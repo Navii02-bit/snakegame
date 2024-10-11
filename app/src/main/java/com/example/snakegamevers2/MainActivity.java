@@ -24,14 +24,15 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView snakeHead, food;
     private Handler handler = new Handler();
-    private String currentDirection = "RIGHT";
+    private String currentDirection = "RIGHT"; // Ensure direction is reset
     private Runnable gameLoop;
     private boolean gameRunning = true;
     private static final int STEP_SIZE = 60; // Movement step size
     private static final int GAME_DELAY = 150; // Delay for smoother movement
     private Random random = new Random();
-    private SnakeGameView snakeGameView;
     private List<ImageView> snakeBody = new ArrayList<>();
+
+    private Button restartButton; // Restart button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +46,9 @@ public class MainActivity extends AppCompatActivity {
         Button downButton = findViewById(R.id.downButton);
         Button leftButton = findViewById(R.id.leftButton);
         Button rightButton = findViewById(R.id.rightButton);
+        restartButton = findViewById(R.id.restartButton); // Initialize restart button
 
-        // Wait for gameBoard to be laid out to get correct dimensions
-        gameBoard.post(new Runnable() {
-            @Override
-            public void run() {
-                initializeGame();
-            }
-        });
-
+        // Set up the control buttons
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,26 +84,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Set up restart button
+        restartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartGame(); // Restart the game when clicked
+            }
+        });
+
+        // Initialize the game after the gameBoard has been laid out
+        gameBoard.post(new Runnable() {
+            @Override
+            public void run() {
+                initializeGame();
+            }
+        });
     }
 
     private void initializeGame() {
-        // snake head
+        // Reset game state for restart
+        gameRunning = true;
+        currentDirection = "RIGHT"; // Reset the direction to the default (RIGHT)
+        score = 0;
+        scoreText.setText("Score: " + score); // Reset score text
+        snakeBody.clear(); // Clear snake body list
+
+        // Create the snake head
         snakeHead = new ImageView(this);
         snakeHead.setImageResource(android.R.drawable.presence_online);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(60, 60); // Larger size for visibility
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(60, 60); // Size for snake head
         params.leftMargin = 0;
         params.topMargin = 0;
         gameBoard.addView(snakeHead, params);
-        snakeBody.add(snakeHead); // Add snake head to the body list
+        snakeBody.add(snakeHead); // Add snake head to body list
 
-        // food
+        // Create the food
         food = new ImageView(this);
         food.setImageResource(android.R.drawable.star_big_on);
         RelativeLayout.LayoutParams foodParams = new RelativeLayout.LayoutParams(60, 60);
         gameBoard.addView(food, foodParams);
-        placeFoodRandomly(); // Place the food on the game board
+        placeFoodRandomly(); // Place food randomly on the board
 
-        // Start game
+        // Start the game loop
+        startGameLoop(); // Start game loop here
+    }
+
+    private void startGameLoop() {
         gameLoop = new Runnable() {
             @Override
             public void run() {
@@ -118,17 +140,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        handler.post(gameLoop);
+        handler.post(gameLoop); // Ensure game loop is always started
     }
 
     private void moveSnake() {
         RelativeLayout.LayoutParams headParams = (RelativeLayout.LayoutParams) snakeHead.getLayoutParams();
 
-        // Store previous position of snake
+        // Store previous position of the snake head
         int prevX = headParams.leftMargin;
         int prevY = headParams.topMargin;
 
-        // snake head based on direction
+        // Move snake head based on the current direction
         switch (currentDirection) {
             case "UP":
                 headParams.topMargin -= STEP_SIZE;
@@ -144,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        // Boundary collision
+        // Check for boundary collision (Game Over)
         if (headParams.leftMargin < 0 || headParams.topMargin < 0 ||
                 headParams.leftMargin + snakeHead.getWidth() > gameBoard.getWidth() ||
                 headParams.topMargin + snakeHead.getHeight() > gameBoard.getHeight()) {
@@ -152,16 +174,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        moveSnakeBody(prevX, prevY);
+        moveSnakeBody(prevX, prevY); // Move the body
 
-        // Food collision
+        // Check for food collision
         if (checkCollision(snakeHead, food)) {
-            growSnake(prevX, prevY);
-            placeFoodRandomly(); // Food
-            increaseScore(); // Increase score
+            growSnake(prevX, prevY); // Grow the snake
+            placeFoodRandomly(); // Reposition food
+            increaseScore(); // Update the score
         }
 
-        snakeHead.setLayoutParams(headParams);
+        snakeHead.setLayoutParams(headParams); // Update the position of the head
     }
 
     private void moveSnakeBody(int prevX, int prevY) {
@@ -183,18 +205,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void growSnake(int x, int y) {
-        // Create a new segment and add it to the snake body
+        // Create a new segment for the snake
         ImageView newSegment = new ImageView(this);
         newSegment.setImageResource(android.R.drawable.presence_online);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(60, 60);
         params.leftMargin = x;
         params.topMargin = y;
         gameBoard.addView(newSegment, params);
-        snakeBody.add(newSegment);
+        snakeBody.add(newSegment); // Add the new segment to the snake body
     }
 
     private boolean checkCollision(View v1, View v2) {
-        // Check if two views overlap
+        // Check if two views are colliding (overlapping)
         int[] loc1 = new int[2];
         int[] loc2 = new int[2];
         v1.getLocationOnScreen(loc1);
@@ -204,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void placeFoodRandomly() {
-        // Place food at a random position
+        // Place the food at a random position within the game board
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) food.getLayoutParams();
         params.leftMargin = random.nextInt(gameBoard.getWidth() - food.getWidth());
         params.topMargin = random.nextInt(gameBoard.getHeight() - food.getHeight());
@@ -212,12 +234,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void increaseScore() {
-        score++; // Increase the score
-        scoreText.setText("Score: " + score); // Update the score
+        score++; // Increase the score by 1
+        scoreText.setText("Score: " + score); // Update the score display
     }
 
     private void gameOver() {
-        gameRunning = false;
+        gameRunning = false; // Stop the game loop
         Toast.makeText(this, "Game Over! Final Score: " + score, Toast.LENGTH_SHORT).show();
+    }
+
+    private void restartGame() {
+        // Stop the game
+        gameRunning = false;
+        handler.removeCallbacks(gameLoop); // Stop the game loop
+
+        // Reset everything
+        gameBoard.removeAllViews(); // Clear the game board
+
+        // Reset the game state and reinitialize the snake and food
+        initializeGame();
     }
 }

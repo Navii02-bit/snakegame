@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <!-- Score Display -->
     <TextView
         android:id="@+id/scoreText"
@@ -23,7 +24,7 @@
     <RelativeLayout
         android:id="@+id/gameBoard"
         android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_height="500dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintTop_toBottomOf="@id/scoreText"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,6 +40,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp">
+
+        <!-- Restart Button -->
+        <Button
+            android:id="@+id/restartButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Restart"
+            android:textStyle="bold"
+            android:backgroundTint="@android:color/holo_red_dark" />
 
         <!-- Movement Buttons -->
 
@@ -71,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Down" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
