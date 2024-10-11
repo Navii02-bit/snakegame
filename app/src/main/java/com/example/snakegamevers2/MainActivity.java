@@ -1,6 +1,7 @@
 package com.example.snakegamevers2;
 
-import android.graphics.Color;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -19,12 +20,13 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private RelativeLayout gameBoard;
-    private TextView scoreText;
+    private TextView scoreText, highScoreText;
     private int score = 0;
+    private int highScore = 0; // Variable to store high score
 
     private ImageView snakeHead, food;
     private Handler handler = new Handler();
-    private String currentDirection = "RIGHT"; // Ensure direction is reset
+    private String currentDirection = "RIGHT";
     private Runnable gameLoop;
     private boolean gameRunning = true;
     private static final int STEP_SIZE = 60; // Movement step size
@@ -32,7 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private Random random = new Random();
     private List<ImageView> snakeBody = new ArrayList<>();
 
-    private Button restartButton; // Restart button
+    private Button restartButton, mainMenuButton;
+
+    private SharedPreferences sharedPreferences; // SharedPreferences to store high score
+    private static final String PREFS_NAME = "SnakeGamePrefs";
+    private static final String HIGH_SCORE_KEY = "highScore";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +47,21 @@ public class MainActivity extends AppCompatActivity {
 
         gameBoard = findViewById(R.id.gameBoard);
         scoreText = findViewById(R.id.scoreText);
+        highScoreText = findViewById(R.id.highScoreText);
 
         Button upButton = findViewById(R.id.upButton);
         Button downButton = findViewById(R.id.downButton);
         Button leftButton = findViewById(R.id.leftButton);
         Button rightButton = findViewById(R.id.rightButton);
-        restartButton = findViewById(R.id.restartButton); // Initialize restart button
+        restartButton = findViewById(R.id.restartButton);
+        mainMenuButton = findViewById(R.id.mainMenuButton); // New Main Menu Button
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        // Load the saved high score
+        highScore = sharedPreferences.getInt(HIGH_SCORE_KEY, 0);
+        updateHighScoreDisplay();
 
         // Set up the control buttons
         upButton.setOnClickListener(new View.OnClickListener() {
@@ -85,11 +100,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Set up restart button
+        // Restart Button logic
         restartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 restartGame(); // Restart the game when clicked
+            }
+        });
+
+        // Main Menu Button logic - Navigates back to the StartupActivity
+        mainMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, StartupActivity.class);
+                startActivity(intent);
+                finish(); // Close the MainActivity so it's removed from the back stack
             }
         });
 
@@ -107,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         gameRunning = true;
         currentDirection = "RIGHT"; // Reset the direction to the default (RIGHT)
         score = 0;
-        scoreText.setText("Score: " + score); // Reset score text
+        updateScoreDisplay(); // Reset score display
         snakeBody.clear(); // Clear snake body list
 
         // Create the snake head
@@ -235,7 +260,29 @@ public class MainActivity extends AppCompatActivity {
 
     private void increaseScore() {
         score++; // Increase the score by 1
-        scoreText.setText("Score: " + score); // Update the score display
+        updateScoreDisplay();
+
+        // Check if the new score is higher than the current high score
+        if (score > highScore) {
+            highScore = score;
+            updateHighScoreDisplay();
+            saveHighScore(); // Save the new high score
+        }
+    }
+
+    private void updateScoreDisplay() {
+        scoreText.setText("Score: " + score);
+    }
+
+    private void updateHighScoreDisplay() {
+        highScoreText.setText("High Score: " + highScore);
+    }
+
+    private void saveHighScore() {
+        // Save the high score using SharedPreferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(HIGH_SCORE_KEY, highScore);
+        editor.apply();
     }
 
     private void gameOver() {

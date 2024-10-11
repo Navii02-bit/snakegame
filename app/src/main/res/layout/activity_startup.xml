@@ -28,9 +28,38 @@
         android:text="Start Game"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:background="@android:color/holo_green_light"
+        android:backgroundTint="@android:color/holo_green_light"
         app:layout_constraintTop_toBottomOf="@id/gameTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="40dp" />
+
+    <!-- Instructions Button -->
+    <Button
+        android:id="@+id/instructionsButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Instructions"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:backgroundTint="@android:color/holo_blue_light"
+        app:layout_constraintTop_toBottomOf="@id/startGameButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+
+    <!-- Reset High Score Button -->
+    <Button
+        android:id="@+id/resetHighScoreButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Reset High Score"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:backgroundTint="@android:color/holo_red_light"
+        app:layout_constraintTop_toBottomOf="@id/instructionsButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

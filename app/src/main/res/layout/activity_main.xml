@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
-    <!-- Score Display -->
+    <!-- Score Display (left aligned) -->
     <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
@@ -18,7 +17,20 @@
         android:layout_marginTop="20dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginStart="20dp" />
+
+    <!-- High Score Display (right aligned) -->
+    <TextView
+        android:id="@+id/highScoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="High Score: 0"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="20dp" />
 
     <!-- Game Board Layout -->
     <RelativeLayout
@@ -33,7 +45,7 @@
 
     <!-- Controls Layout -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/gameBoard"
@@ -41,33 +53,65 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp">
 
-        <!-- Restart Button -->
-        <Button
-            android:id="@+id/restartButton"
+        <!-- Main Menu and Restart Button Row -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Restart"
-            android:textStyle="bold"
-            android:backgroundTint="@android:color/holo_red_dark" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
 
-        <!-- Movement Buttons -->
+            <!-- Main Menu Button -->
+            <Button
+                android:id="@+id/mainMenuButton"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Main Menu"
+                android:textStyle="bold"
+                android:backgroundTint="@android:color/holo_blue_dark" />
 
+            <!-- Space between Main Menu and Restart -->
+            <View
+                android:layout_width="20dp"
+                android:layout_height="50dp" />
+
+            <!-- Restart Button -->
+            <Button
+                android:id="@+id/restartButton"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Restart"
+                android:textStyle="bold"
+                android:backgroundTint="@android:color/holo_red_dark" />
+        </LinearLayout>
+
+        <!-- Space between Restart and Up Button -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <!-- Up Button (centered) -->
         <Button
             android:id="@+id/upButton"
-            android:layout_width="match_parent"
+            android:layout_width="197dp"
             android:layout_height="50dp"
+            android:layout_gravity="center"
             android:text="Up" />
 
+        <!-- Movement Buttons (Left and Right) -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_gravity="center">
 
             <Button
                 android:id="@+id/leftButton"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:text="Left" />
+            <!-- Space between Restart and Up Button -->
 
             <Button
                 android:id="@+id/rightButton"
@@ -76,12 +120,13 @@
                 android:text="Right" />
         </LinearLayout>
 
+        <!-- Down Button (centered) -->
         <Button
             android:id="@+id/downButton"
-            android:layout_width="match_parent"
+            android:layout_width="201dp"
             android:layout_height="50dp"
+            android:layout_gravity="center"
             android:text="Down" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
